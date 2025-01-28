@@ -35,6 +35,17 @@
 #  milliether (finney)	1e15 wei	 1,000,000,000,000,000
 #  ether	            1e18 wei	 1,000,000,000,000,000,000
 
+# Visibility Quantifiers
+# external − External functions are meant to be called by other contracts. They cannot be used for internal calls.
+# public   − Public functions/variables can be used both externally and internally. For public state variables, Solidity automatically creates a getter function.
+# internal − Internal functions/variables can only be used internally or by derived contracts.
+# private  − Private functions/variables can only be used internally and not even by derived contracts.
+#
+# Variable Location Options
+# Storage  - It is where all state variables are stored. Because state can be altered in a contract (for example, within a function), stor age variables must be mutable. However, their location is persistent, and they are stored on the blockchain.
+# Memory   - Reserved for variables that are defined within the scope of a function. They only persist while a function is called, and thus are temporary variables that cannot be accessed outside this scope (ie anywhere else in your contract besides within that function). However, they are mutable within that function.
+# Calldata - Is an immutable, temporary location where function arguments are stored, and behaves mostly like memory.
+
 
 # ==============================================================================
 # Install dependencies
@@ -50,6 +61,18 @@ dev.update:
 	brew update
 	brew list ethereum || brew upgrade ethereum
 	brew list solidity || brew upgrade solidity
+
+# ==============================================================================
+# These commands build, deploy, and run the basic smart contract.
+
+# This will compile the smart contract and produce the binary code. Then with the
+# abi and binary code, a Go source code file can be generated for Go API access.
+
+basic-build:
+	solc --evm-version $(SOLC_EVM_VERSION) --abi app/basic/contract/src/basic/basic.sol -o app/basic/contract/abi/basic --overwrite
+	solc --evm-version $(SOLC_EVM_VERSION) --bin app/basic/contract/src/basic/basic.sol -o app/basic/contract/abi/basic --overwrite
+	abigen --bin=app/basic/contract/abi/basic/Basic.bin --abi=app/basic/contract/abi/basic/Basic.abi --pkg=basic --out=app/basic/contract/go/basic/basic.go
+
 
 # ==============================================================================
 # These commands start the Ethereum node and provide examples of attaching
@@ -85,3 +108,22 @@ geth-deposit:
 #	curl -H 'Content-Type: application/json' --data '{"jsonrpc":"2.0","method":"eth_sendTransaction", "params": [{"from":"0xb4c5b8ea361584dd0f8d28a094b9e7e1e9f336a4", "to":"0x7FDFc99999f1760e8dBd75a480B93c7B8386B79a", "value":"0x1000000000000000000"}], "id":1}' localhost:8545
 #	curl -H 'Content-Type: application/json' --data '{"jsonrpc":"2.0","method":"eth_sendTransaction", "params": [{"from":"0xb4c5b8ea361584dd0f8d28a094b9e7e1e9f336a4", "to":"0x000cF95cB5Eb168F57D0bEFcdf6A201e3E1acea9", "value":"0x1000000000000000000"}], "id":1}' localhost:8545
 
+# ==============================================================================
+# These commands provide Go related support.
+
+test:
+	CGO_ENABLED=0 go test -count=1 ./...
+	CGO_ENABLED=0 go vet ./...
+	staticcheck -checks=all ./...
+	govulncheck ./...
+
+# This will tidy up the Go dependencies.
+tidy:
+	go mod tidy
+	go mod vendor
+
+deps-upgrade:
+	# go get $(go list -f '{{if not (or .Main .Indirect)}}{{.Path}}{{end}}' -m all)
+	go get -u -v ./...
+	go mod tidy
+	go mod vendor
