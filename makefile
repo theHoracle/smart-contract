@@ -73,6 +73,34 @@ basic-build:
 	solc --evm-version $(SOLC_EVM_VERSION) --bin app/basic/contract/src/basic/basic.sol -o app/basic/contract/abi/basic --overwrite
 	abigen --bin=app/basic/contract/abi/basic/Basic.bin --abi=app/basic/contract/abi/basic/Basic.abi --pkg=basic --out=app/basic/contract/go/basic/basic.go
 
+# This will deploy the smart contract to the locally running Ethereum environment.
+basic-deploy:
+	CGO_ENABLED=0 go run app/basic/cmd/deploy/main.go
+
+# This will execute a simple program to test access to the smart contract API.
+basic-write:
+	CGO_ENABLED=0 go run app/basic/cmd/write/main.go
+
+# This will execute a simple program to test access to the smart contract API.
+basic-read:
+	CGO_ENABLED=0 go run app/basic/cmd/read/main.go
+
+basic-test:
+	cd app/basic/contract/go/basic;\
+	go test . -v
+
+# ==============================================================================
+# These commands build, deploy, and run the bank-single smart contract.
+
+bank-single-build:
+	solc --evm-version $(SOLC_EVM_VERSION) --abi app/bank/single/contract/src/bank/bank.sol -o app/bank/single/contract/abi/bank --overwrite
+	solc --evm-version $(SOLC_EVM_VERSION) --bin app/bank/single/contract/src/bank/bank.sol -o app/bank/single/contract/abi/bank --overwrite
+	abigen --bin=app/bank/single/contract/abi/bank/Bank.bin --abi=app/bank/single/contract/abi/bank/Bank.abi --pkg=bank --out=app/bank/single/contract/go/bank/bank.go
+
+bank-single-deploy:
+	CGO_ENABLED=0 go run app/bank/single/cmd/deploy/main.go
+
+
 
 # ==============================================================================
 # These commands start the Ethereum node and provide examples of attaching
