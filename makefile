@@ -100,6 +100,59 @@ bank-single-build:
 bank-single-deploy:
 	CGO_ENABLED=0 go run app/bank/single/cmd/deploy/main.go
 
+# ==============================================================================
+# These commands build and deploy different version of the proxy bank smart contract.
+
+bank-proxy-build:
+	solc --evm-version $(SOLC_EVM_VERSION) --abi app/bank/proxy/contract/src/bank/bank.sol -o app/bank/proxy/contract/abi/bank --overwrite
+	solc --evm-version $(SOLC_EVM_VERSION) --bin app/bank/proxy/contract/src/bank/bank.sol -o app/bank/proxy/contract/abi/bank --overwrite
+	abigen --bin=app/bank/proxy/contract/abi/bank/Bank.bin --abi=app/bank/proxy/contract/abi/bank/Bank.abi --pkg=bank --out=app/bank/proxy/contract/go/bank/bank.go
+
+bank-api-v1-build:
+	solc --evm-version $(SOLC_EVM_VERSION) --abi app/bank/proxy/contract/src/bankapi/v1/api.sol -o app/bank/proxy/contract/abi/bankapi --overwrite
+	solc --evm-version $(SOLC_EVM_VERSION) --bin app/bank/proxy/contract/src/bankapi/v1/api.sol -o app/bank/proxy/contract/abi/bankapi --overwrite
+	abigen --bin=app/bank/proxy/contract/abi/bankapi/BankAPI.bin --abi=app/bank/proxy/contract/abi/bankapi/BankAPI.abi --pkg=bankapi --out=app/bank/proxy/contract/go/bankapi/bankapi.go
+
+bank-api-v2-build:
+	solc --evm-version $(SOLC_EVM_VERSION) --abi app/bank/proxy/contract/src/bankapi/v2/api.sol -o app/bank/proxy/contract/abi/bankapi --overwrite
+	solc --evm-version $(SOLC_EVM_VERSION) --bin app/bank/proxy/contract/src/bankapi/v2/api.sol -o app/bank/proxy/contract/abi/bankapi --overwrite
+	abigen --bin=app/bank/proxy/contract/abi/bankapi/BankAPI.bin --abi=app/bank/proxy/contract/abi/bankapi/BankAPI.abi --pkg=bankapi --out=app/bank/proxy/contract/go/bankapi/bankapi.go
+
+bank-api-v3-build:
+	solc --evm-version $(SOLC_EVM_VERSION) --abi app/bank/proxy/contract/src/bankapi/v3/api.sol -o app/bank/proxy/contract/abi/bankapi --overwrite
+	solc --evm-version $(SOLC_EVM_VERSION) --bin app/bank/proxy/contract/src/bankapi/v3/api.sol -o app/bank/proxy/contract/abi/bankapi --overwrite
+	abigen --bin=app/bank/proxy/contract/abi/bankapi/BankAPI.bin --abi=app/bank/proxy/contract/abi/bankapi/BankAPI.abi --pkg=bankapi --out=app/bank/proxy/contract/go/bankapi/bankapi.go
+
+bank-proxy-deploy:
+	CGO_ENABLED=0 go run app/bank/proxy/cmd/deploy/bank/main.go
+
+bank-api-deploy:
+	CGO_ENABLED=0 go run app/bank/proxy/cmd/deploy/api/main.go
+
+# ==============================================================================
+# These commands execute API's against the bank smart contract.
+
+# Calls Bank Proxy Deposit function
+bank-proxy-deposit:
+	DEPOSIT_TARGET="account1" DEPOSIT_AMOUNT="120000" CGO_ENABLED=0 go run app/bank/proxy/cmd/deposit/main.go
+
+# Calls Bank Proxy Withdraw function
+bank-proxy-withdraw:
+	WITHDRAW_TARGET="account1" CGO_ENABLED=0 go run app/bank/proxy/cmd/withdraw/main.go
+
+# Loads the Bank Proxy account balance with values from various accounts
+bank-proxy-load:
+	DEPOSIT_TARGET="account1" DEPOSIT_AMOUNT="100000" CGO_ENABLED=0 go run app/bank/proxy/cmd/deposit/main.go
+	DEPOSIT_TARGET="account2" DEPOSIT_AMOUNT="110000" CGO_ENABLED=0 go run app/bank/proxy/cmd/deposit/main.go
+	DEPOSIT_TARGET="account3" DEPOSIT_AMOUNT="120000" CGO_ENABLED=0 go run app/bank/proxy/cmd/deposit/main.go
+	DEPOSIT_TARGET="account4" DEPOSIT_AMOUNT="130000" CGO_ENABLED=0 go run app/bank/proxy/cmd/deposit/main.go
+
+# Reads all account balances
+bank-proxy-balances:
+	BALANCE_TARGET="account1" CGO_ENABLED=0 go run app/bank/proxy/cmd/balance/main.go
+	BALANCE_TARGET="account2" CGO_ENABLED=0 go run app/bank/proxy/cmd/balance/main.go
+	BALANCE_TARGET="account3" CGO_ENABLED=0 go run app/bank/proxy/cmd/balance/main.go
+	BALANCE_TARGET="account4" CGO_ENABLED=0 go run app/bank/proxy/cmd/balance/main.go
 
 
 # ==============================================================================
