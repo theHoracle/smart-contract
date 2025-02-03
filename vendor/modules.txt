@@ -18,9 +18,6 @@ github.com/VictoriaMetrics/fastcache
 ## explicit; go 1.21.6
 github.com/ardanlabs/ethereum
 github.com/ardanlabs/ethereum/currency
-# github.com/ardanlabs/smartcontract v0.0.0-20250118220536-a2d614f3f652
-## explicit; go 1.23.0
-github.com/ardanlabs/smartcontract/app/basic/contract/go/basic
 # github.com/beorn7/perks v1.0.1
 ## explicit; go 1.11
 github.com/beorn7/perks/quantile

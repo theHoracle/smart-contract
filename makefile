@@ -108,6 +108,7 @@ bank-proxy-build:
 	solc --evm-version $(SOLC_EVM_VERSION) --bin app/bank/proxy/contract/src/bank/bank.sol -o app/bank/proxy/contract/abi/bank --overwrite
 	abigen --bin=app/bank/proxy/contract/abi/bank/Bank.bin --abi=app/bank/proxy/contract/abi/bank/Bank.abi --pkg=bank --out=app/bank/proxy/contract/go/bank/bank.go
 
+
 bank-api-v1-build:
 	solc --evm-version $(SOLC_EVM_VERSION) --abi app/bank/proxy/contract/src/bankapi/v1/api.sol -o app/bank/proxy/contract/abi/bankapi --overwrite
 	solc --evm-version $(SOLC_EVM_VERSION) --bin app/bank/proxy/contract/src/bankapi/v1/api.sol -o app/bank/proxy/contract/abi/bankapi --overwrite
@@ -147,7 +148,11 @@ bank-proxy-load:
 	DEPOSIT_TARGET="account3" DEPOSIT_AMOUNT="120000" CGO_ENABLED=0 go run app/bank/proxy/cmd/deposit/main.go
 	DEPOSIT_TARGET="account4" DEPOSIT_AMOUNT="130000" CGO_ENABLED=0 go run app/bank/proxy/cmd/deposit/main.go
 
+bank-proxy-balance:
+	BALANCE_TARGET="account2" CGO_ENABLED=0 go run app/bank/proxy/cmd/balance/main.go
 # Reads all account balances
+	
+
 bank-proxy-balances:
 	BALANCE_TARGET="account1" CGO_ENABLED=0 go run app/bank/proxy/cmd/balance/main.go
 	BALANCE_TARGET="account2" CGO_ENABLED=0 go run app/bank/proxy/cmd/balance/main.go

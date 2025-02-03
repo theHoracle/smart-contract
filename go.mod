@@ -4,7 +4,6 @@ go 1.23.5
 
 require (
 	github.com/ardanlabs/ethereum v0.20.0
-	github.com/ardanlabs/smartcontract v0.0.0-20250118220536-a2d614f3f652
 	github.com/ethereum/go-ethereum v1.14.12
 )
 
